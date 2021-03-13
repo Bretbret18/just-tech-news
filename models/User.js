@@ -60,15 +60,5 @@ User.init(
     }
 );
 
-// // just added, correct?? //
-// const connection = mysql.createConnection({
-//     host: "localhost",
-//     // Your username
-//     user: "bretbret18",
-//     // Your password
-//     password: "Normajean!8",
-//    // Your database name
-//     database: "3306"
-//   });
 
 module.exports = User;

@@ -7,7 +7,8 @@ require('dotenv').config();
 const sequelize = new Sequelize('just_tech_news', 'root', 'root', {
     host: 'localhost',
     dialect: 'mysql',
-    port: 3306
+    port: 3306,
+    logging: console.log,
 });
 
 module.exports= sequelize;
