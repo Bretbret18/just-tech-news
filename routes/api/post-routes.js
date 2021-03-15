@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const sequelize = require('../../config/connection');
-const { Post, User, Vote } = require('../../models');
+const { Post, User, Vote, Comment } = require('../../models');
 // const { sequelize } = require('../../models/User');
 
 
@@ -8,15 +8,17 @@ const { Post, User, Vote } = require('../../models');
 router.get('/', (req, res) => {
   console.log('=========================');
   Post.findAll({
+    order: [['created_at', 'DESC']],
     attributes: ['id', 'post_url', 'title', 'created_at', 'user_id', 
       [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count'],
-      [sequelize.literal('(SELECT username FROM user WHERE user.id = post.user_id)'), 'username']
     ],
-    order: [['created_at', 'DESC']],
     include: [
+      // include the comment model here:
       {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
         model: User, 
-        
+        attributes: ['username']
       }
     ]
   })
