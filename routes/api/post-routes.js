@@ -8,16 +8,21 @@ const { Post, User, Vote, Comment } = require('../../models');
 router.get('/', (req, res) => {
   console.log('=========================');
   Post.findAll({
-    order: [['created_at', 'DESC']],
-    attributes: ['id', 'post_url', 'title', 'created_at', 'user_id', 
+    attributes: ['id', 'post_url', 'title', 'created_at',
       [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count'],
     ],
+    order: [['created_at', 'DESC']],
     include: [
-      // include the comment model here:
       {
         model: Comment,
         attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
-        model: User, 
+        include: {
+          model: User,
+          attributes: ['username']
+        }
+      },
+      {
+        model: User,
         attributes: ['username']
       }
     ]
@@ -38,6 +43,14 @@ router.get('/:id', (req, res) => {
       [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
     ],
     include: [
+      {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        include: {
+          model: User,
+          attributes: ['username']
+        }
+      },
       {
         model: User,
         attributes: ['username']
@@ -74,12 +87,12 @@ router.post('/', (req, res) => {
 // PUT /api/posts/upvote
 router.put('/upvote', (req, res) => {
   // custom static method created in models/Post.js
- Post.upvote(req.body, { Vote })
- .then(updatedPostData => res.json(updatedPostData))
- .catch(err => {
-   console.log(err);
-   res.status(400).json(err);
- });
+  Post.upvote(req.body, { Vote, Comment, User })
+    .then(updatedPostData => res.json(updatedPostData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 router.put('/:id', (req, res) => {
