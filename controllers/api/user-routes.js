@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Post, Vote, Comment } = require('../../models');
+const { User, Post, Comment, Vote } = require('../../models');
 
 // GET /api/users
 router.get('/', (req, res) => {
@@ -130,7 +130,7 @@ router.put('/:id', (req, res) => {
         }
     })
         .then(dbUserData => {
-            if (!dbUserData[0]) { // [0]?? //
+            if (!dbUserData) { 
                 res.status(404).json({ message: 'No user found with this id' });
                 return;
             }
@@ -151,7 +151,7 @@ router.delete('/:id', (req, res) => {
     })
         .then(dbUserData => {
             if (!dbUserData) {
-                res.status(404).json({ message: 'No user data found with this id' });
+                res.status(404).json({ message: 'No user found with this id' });
                 return;
             }
             res.json(dbUserData);
